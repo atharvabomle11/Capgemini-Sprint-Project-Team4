@@ -21,6 +21,7 @@ class OfficeRestApiTest {
     @Autowired
     private MockMvc mockMvc;
 
+    //pass case
     @Test
     void getAllOffices_shouldReturnData() throws Exception {
 
@@ -31,5 +32,24 @@ class OfficeRestApiTest {
                 .andExpect(jsonPath("$._embedded.offices[0].city").exists())
                 .andExpect(jsonPath("$._embedded.offices[0].phone").exists())
                 .andExpect(jsonPath("$._embedded.offices[0].country").exists());;
+    }
+
+    //pass case
+    @Test
+    void getOfficeByOfficeCode_shouldReturnOffice_whenOfficeCodeExists() throws Exception {
+
+        mockMvc.perform(get("/offices/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.city").exists())
+                .andExpect(jsonPath("$.phone").exists())
+                .andExpect(jsonPath("$.city").exists())
+                .andExpect(jsonPath("$._links.self.href").exists());
+    }
+    //fail case
+    @Test
+    void getOfficeByOfficeCode_shouldReturnOffice_whenOfficeDoesCodeExists() throws Exception {
+
+        mockMvc.perform(get("/offices/10"))
+                .andExpect(status().isNotFound());
     }
 }
