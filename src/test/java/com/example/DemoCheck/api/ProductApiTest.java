@@ -1,4 +1,4 @@
-package com.example.DemoCheck.controller;
+package com.example.DemoCheck.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class ProductsAPITest {
+public class ProductApiTest {
     @Autowired
     private MockMvc mockMvc;
 

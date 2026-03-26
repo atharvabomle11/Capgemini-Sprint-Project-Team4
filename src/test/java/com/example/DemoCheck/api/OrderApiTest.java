@@ -1,6 +1,6 @@
-package com.example.DemoCheck.controller;
+package com.example.DemoCheck.api;
 
-import com.example.DemoCheck.entity.Orders;
+import com.example.DemoCheck.entity.Order;
 import com.example.DemoCheck.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class OrderAPITest {
+public class OrderApiTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -32,7 +32,7 @@ public class OrderAPITest {
     @Test
     void testSaveOrder() throws Exception {
 
-        Orders order = new Orders();
+        Order order = new Order();
         order.setOrderNumber(10150);
         order.setStatus("Processing");
 

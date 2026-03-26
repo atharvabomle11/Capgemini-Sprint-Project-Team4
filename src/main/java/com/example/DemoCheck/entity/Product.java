@@ -9,7 +9,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "products")
-public class Products {
+public class Product {
     @Id
     @Column(name = "productCode")
     private String productCode;

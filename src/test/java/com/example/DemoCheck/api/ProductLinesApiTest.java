@@ -1,4 +1,4 @@
-package com.example.DemoCheck.controller;
+package com.example.DemoCheck.api;
 
 import com.example.DemoCheck.repository.ProductLineRepository;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ProductLinesAPITest {
+public class ProductLinesApiTest {
 
     @Autowired
     private MockMvc mockMvc;
