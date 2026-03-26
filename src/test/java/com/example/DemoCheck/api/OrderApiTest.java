@@ -29,27 +29,39 @@ public class OrderApiTest {
     private ObjectMapper objectMapper;
 
 
-    @Test
-    void testSaveOrder() throws Exception {
+//    @Test
+//    void testSaveOrder() throws Exception {
+//
+//        Order order = new Order();
+//        order.setOrderNumber(10150);
+//        order.setStatus("Processing");
+//
+//        mockMvc.perform(post("/orders")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(order)))
+//                .andExpect(status().isCreated());
+//    }
+@Test
+void testSaveOrder() throws Exception {
+    String json = """
+        {
+            "orderNumber": 10150,
+            "status": "Processing"
+        }
+        """;
 
-        Order order = new Order();
-        order.setOrderNumber(10150);
-        order.setStatus("Processing");
+    mockMvc.perform(post("/orders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json))
+            .andExpect(status().isCreated())
+            .andExpect(header().exists("Location"));
+}
 
-        mockMvc.perform(post("/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(order)))
-                .andExpect(status().isCreated());
 
-    }
     @Test
     void testGetOrderNotFound() throws Exception {
 
         mockMvc.perform(get("/orders/999999"))
                 .andExpect(status().isNotFound());
     }
-
-
-
-
 }
