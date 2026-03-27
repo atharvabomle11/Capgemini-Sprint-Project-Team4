@@ -18,30 +18,30 @@ import lombok.ToString;
 public class Office {
 
     @Id
-    @Column(name = "officeCode")
+    @Column(name = "officeCode",length = 10)
     private String officeCode;
 
-    @Column(name = "city")
+    @Column(name = "city",nullable = false,length = 50)
     private String city;
 
-    @Column(name = "phone")
+    @Column(name = "phone",nullable = false,length = 50)
     private String phone;
 
-    @Column(name = "addressLine1")
+    @Column(name = "addressLine1",nullable = false,length = 50)
     private String addressLine1;
 
-    @Column(name = "addressLine2")
+    @Column(name = "addressLine2",nullable = false,length = 50)
     private String addressLine2;
 
-    @Column(name = "state")
+    @Column(name = "state",nullable = false,length = 50)
     private String state;
 
-    @Column(name = "country")
+    @Column(name = "country",nullable = false,length = 50)
     private String country;
 
-    @Column(name = "postalCode")
+    @Column(name = "postalCode",nullable = false,length = 15)
     private String postalCode;
 
-    @Column(name = "territory")
+    @Column(name = "territory",nullable = false,length = 10)
     private String territory;
 }
