@@ -42,4 +42,8 @@ public class Office {
 
     @Column(name = "territory",nullable = false,length = 10)
     private String territory;
+
+    @OneToMany(mappedBy = "office")
+    private List<Employee> employees;
+
 }
