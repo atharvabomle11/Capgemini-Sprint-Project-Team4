@@ -1,13 +1,10 @@
 package com.example.DemoCheck.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "offices")
@@ -44,4 +41,8 @@ public class Office {
 
     @Column(name = "territory",nullable = false,length = 10)
     private String territory;
+
+    @OneToMany(mappedBy = "office")
+    private List<Employee> employees;
+
 }

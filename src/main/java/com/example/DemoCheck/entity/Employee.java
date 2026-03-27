@@ -1,9 +1,6 @@
 package com.example.DemoCheck.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -27,11 +24,14 @@ public class Employee {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "officeCode", nullable = false)
-    private String officeCode;
+    @ManyToOne
+    @JoinColumn(name = "officeCode")
+    private Office office;
+
+    @Column(name="reportsTo")
+    private Integer reportsTo;
 
     @Column(name = "jobTitle", length = 50)
     private String jobTitle;
-
 
 }
