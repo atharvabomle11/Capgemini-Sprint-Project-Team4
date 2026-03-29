@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 @RepositoryEventHandler(Employee.class)
 public class EmployeeEventHandler {
 
+    public static final ThreadLocal<Integer> currentEmployeeId = new ThreadLocal<>();
+
     @Autowired
     private OfficeRepository officeRepository;
 
@@ -33,11 +35,15 @@ public class EmployeeEventHandler {
     }
 
     private void checkDuplicate(Employee employee) {
-        if (employee.getEmployeeNumber() != null &&
-                employeeRepository.existsById(employee.getEmployeeNumber())) {
-            throw new IllegalArgumentException(
-                    "Employee already exists with id: " + employee.getEmployeeNumber()
-            );
+        if (employee.getEmployeeNumber() != null) {
+
+            currentEmployeeId.set(employee.getEmployeeNumber()); // ✅ store always
+
+            if (employeeRepository.existsById(employee.getEmployeeNumber())) {
+                throw new IllegalArgumentException(
+                        "Employee already exists with id: " + employee.getEmployeeNumber()
+                );
+            }
         }
     }
 

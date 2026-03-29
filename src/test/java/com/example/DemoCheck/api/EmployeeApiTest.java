@@ -122,9 +122,13 @@ public class EmployeeApiTest {
 
         mockMvc.perform(get("/employees/search/byJobTitle")
                         .param("jobTitle", "sales")
-                        .param("projection", "employeeView"))
+                        .param("projection", "employeeView")
+                        .param("page", "0")   // ✅ page number
+                        .param("size", "1"))  // ✅ page size)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.employees").exists())
+                .andExpect(jsonPath("$.page.size").value(1))     // ✅ check page size
+                .andExpect(jsonPath("$.page.number").value(0))   // ✅ check page number
                 .andExpect(jsonPath("$._embedded.employees[0].jobTitle").value("Sales Manager (NA)"));
     }
 
@@ -146,9 +150,14 @@ public class EmployeeApiTest {
 
         mockMvc.perform(get("/employees/search/byReportsTo")
                         .param("reportsTo", "1")
-                        .param("projection", "employeeView"))
+                        .param("projection", "employeeView")
+                        .param("page", "0")   // ✅ pagination
+                        .param("size", "1")) // ✅ only 1 result per page)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.employees").exists())
+                // ✅ pagination checks
+                .andExpect(jsonPath("$.page.size").value(1))
+                .andExpect(jsonPath("$.page.number").value(0))
                 .andExpect(jsonPath("$._embedded.employees[0].jobTitle").value("Sales Rep"));
     }
 
@@ -378,6 +387,11 @@ public class EmployeeApiTest {
         Office office2 = new Office();
         office2.setOfficeCode("2");
         office2.setCity("Mumbai");
+        office2.setPhone("1234567890");
+        office2.setAddressLine1("IT Park");
+        office2.setCountry("India");
+        office2.setPostalCode("440022");
+        office2.setTerritory("APAC");
         officeRepository.save(office2);
 
         createTestEmployee(3009, "John", "Doe", "john@test.com", "Dev", null, office1);
@@ -388,9 +402,9 @@ public class EmployeeApiTest {
         }
         """;
 
-        mockMvc.perform(patch("/employees/3009")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updateJson))
+        mockMvc.perform(put("/employees/3009/office")
+                        .contentType("text/uri-list")
+                        .content("/offices/2"))
                 .andExpect(status().isNoContent());
     }
 
@@ -408,7 +422,7 @@ public class EmployeeApiTest {
         // Spring Data REST usually returns 400 or 404 for broken links
         // depending on the version. If you expect 400, ensure your
         // ExceptionHandler handles ResourceNotFoundException during binding.
-        mockMvc.perform(patch("/employees/3010")
+        mockMvc.perform(put("/employees/3010/offices")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateJson))
                 .andExpect(status().is4xxClientError());
@@ -422,10 +436,10 @@ public class EmployeeApiTest {
         createTestEmployee(4002, "John", "Doe", "john@test.com", "Dev", null, office);
 
         String updateJson = """
-        {
-            "manager": "/employees/4001"
-        }
-        """;
+{
+    "reportsTo": "/employees/4001"
+}
+""";
 
         mockMvc.perform(patch("/employees/4002")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -434,19 +448,20 @@ public class EmployeeApiTest {
     }
 
     @Test
-    void UpdateEmployee_ReportsTo_Fail_Invalid() throws Exception {
+    void UpdateEmployee_ReportsToSelf_Fail_Invalid() throws Exception {
         Office office = getDefaultOffice();
+        createTestEmployee(4001, "Boss", "Manager", "boss@test.com", "CEO", null, office);
         createTestEmployee(4003, "John", "Doe", "john@test.com", "Dev", null, office);
 
         String updateJson = """
         {
-            "manager": "/employees/9999"
+            "reportsTo": "/employees/4003"
         }
         """;
 
-        mockMvc.perform(patch("/employees/4003")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updateJson))
+        mockMvc.perform(put("/employees/4003")
+                        .contentType("text/uri-list")
+                        .content("/employees/4003"))
                 .andExpect(status().is4xxClientError());
     }
 
