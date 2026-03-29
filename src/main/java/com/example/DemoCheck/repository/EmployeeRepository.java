@@ -28,4 +28,7 @@ public interface EmployeeRepository extends JpaRepository<Employee,Integer> {
     @RestResource(path = "byJobTitle", rel = "byJobTitle")
     Page<Employee> findByJobTitleContainingIgnoreCase(@Param("jobTitle") String jobTitle, Pageable pageable);
 
+    @RestResource(path = "by-office-code",rel = "by-office-code")
+    Page<Employee> findByOffice_OfficeCode(@Param("officeCode") String officeCode,
+                                           Pageable pageable);
 }

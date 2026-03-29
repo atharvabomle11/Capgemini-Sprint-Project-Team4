@@ -18,44 +18,37 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-        @ExceptionHandler(MethodArgumentNotValidException.class)
-        public ResponseEntity<String> handleValidation(Exception ex) {
-                return ResponseEntity.badRequest().body("Validation failed");
-        }
-
-        @ExceptionHandler(DataIntegrityViolationException.class)
-        public ResponseEntity<String> handleDBException(Exception ex) {
-                return ResponseEntity
-                                .badRequest()
-                                .body("Invalid data: Required fields missing");
-        }
-
-        // Invalid ID format
-        @ExceptionHandler(ConversionFailedException.class)
-        public ResponseEntity<ErrorResponse> handleConversionFailed(
-                        ConversionFailedException ex,
-                        HttpServletRequest request) {
-
-                ErrorResponse error = new ErrorResponse(
-                                HttpStatus.BAD_REQUEST.value(),
-                                "Invalid ID format. ID must be a number.",
-                                request.getRequestURI(),
-                                LocalDateTime.now());
-
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidation(Exception ex) {
+        return ResponseEntity.badRequest().body("Validation failed");
     }
 
-        // Customer not found (valid ID but not present)
-        @ExceptionHandler(ResourceNotFoundException.class)
-        public ResponseEntity<ErrorResponse> handleNotFound(
-                        ResourceNotFoundException ex,
-                        HttpServletRequest request) {
+    // Invalid ID format
+    @ExceptionHandler(ConversionFailedException.class)
+    public ResponseEntity<ErrorResponse> handleConversionFailed(
+            ConversionFailedException ex,
+            HttpServletRequest request) {
 
-                ErrorResponse error = new ErrorResponse(
-                                HttpStatus.NOT_FOUND.value(),
-                                "Customer not found",
-                                request.getRequestURI(),
-                                LocalDateTime.now());
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid ID format. ID must be a number.",
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    // Customer not found (valid ID but not present)
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(
+            ResourceNotFoundException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Customer not found",
+                request.getRequestURI(),
+                LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
@@ -69,8 +62,7 @@ public class GlobalExceptionHandler {
                 400,
                 ex.getMessage(),
                 request.getRequestURI(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -89,8 +81,7 @@ public class GlobalExceptionHandler {
                 400,
                 message,
                 request.getRequestURI(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -100,30 +91,34 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request) {
 
+        String message;
+
         try {
             Integer id = EmployeeEventHandler.currentEmployeeId.get();
 
-            String message = (id != null)
-                    ? "Employee already exists with id: " + id
-                    : "Duplicate employee";
-
-            ErrorResponse error = new ErrorResponse(
-                    400,
-                    message,
-                    request.getRequestURI(),
-                    LocalDateTime.now()
-            );
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-
+            if (id != null) {
+                message = "Employee already exists with id: " + id;
+            } else if (ex.getMessage() != null && ex.getMessage().contains("not-null")) {
+                message = "Required fields are missing";
+            } else {
+                message = "Invalid or duplicate data";
+            }
         } finally {
-            // ✅ CLEANUP HERE
+
             EmployeeEventHandler.currentEmployeeId.remove();
         }
+
+        ErrorResponse error = new ErrorResponse(
+                400,
+                message,
+                request.getRequestURI(),
+                LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
     }
 
-
-    //Generic fallback
+    // Generic fallback
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(
             Exception ex,
@@ -133,8 +128,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 ex.getMessage(),
                 request.getRequestURI(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
