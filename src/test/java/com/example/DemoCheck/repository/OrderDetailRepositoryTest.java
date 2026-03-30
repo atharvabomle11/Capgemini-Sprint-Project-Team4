@@ -2,10 +2,12 @@ package com.example.DemoCheck.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -107,5 +109,69 @@ public class OrderDetailRepositoryTest {
         OrderDetails orderDetailRecord = result.get(0);
         assertEquals("S10_89876", orderDetailRecord.getProduct().getProductCode());
         assertEquals(50, orderDetailRecord.getQuantityOrdered());
+    }   
+
+    @Test
+    void testFindByProduct_ProductCode_NoRecords() {
+        List<OrderDetails> result = orderDetailRepository.findByProduct_ProductCode("S18_3233"); // valid product with no orderdetail record
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testFindByProduct_InvalidProductCode() {
+        List<OrderDetails> result = orderDetailRepository.findByProduct_ProductCode("INVALID_CODE");
+
+        // Assertions
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testFindByProduct_ProductCode_MultipleRecords() {
+        List<OrderDetails> result = orderDetailRepository.findByProduct_ProductCode("S10_1949");
+
+        assertNotNull(result);
+        assertTrue(result.size() >= 1);
+    } 
+
+    // null input test
+    @Test
+    void testFindByProduct_ProductCode_nullInput() {
+
+        List<OrderDetails> result =
+                orderDetailRepository.findByProduct_ProductCode(null);
+
+        assertTrue(result.isEmpty());
+    }
+
+    // relationship integrity
+    @Test
+    void testOrderDetailDataIntegrity() {
+
+        List<OrderDetails> result =
+                orderDetailRepository.findByProduct_ProductCode("S10_89876");
+
+        OrderDetails od = result.get(0);
+
+        assertNotNull(od.getOrder());
+        assertNotNull(od.getProduct());
+    }
+
+    // derived field testing
+    @Test
+    void testTotalPriceCalculation() {
+        OrderDetailId id = new OrderDetailId();
+        id.setOrderNumber(10500);
+        id.setProductCode("S10_89876");
+
+        OrderDetails orderDetail = orderDetailRepository.findById(id).get();
+
+        BigDecimal expected = new BigDecimal("325000");
+
+        BigDecimal actual = orderDetail.getPriceEach().multiply(BigDecimal.valueOf(orderDetail.getQuantityOrdered()));
+
+        assertEquals(expected, actual);
     }
 }
