@@ -15,7 +15,6 @@
     @Validated
     @CrossOrigin(origins = "*")
     @RepositoryRestResource(path = "products")
-    // @RepositoryRestResource(path = "products", excerptProjection = ProductProjection.class)
     public interface ProductRepository extends JpaRepository<Product, String> {
         @RestResource(path = "searchByNameOrLine")
         Page<Product> findByProductNameContainingIgnoreCaseOrProductLine_ProductLineContainingIgnoreCase(
@@ -28,5 +27,11 @@
                 @Param("name") String name,
                 @Param("line") String line,
                 Pageable pageable
+        );
+
+        @RestResource(path = "searchByVendor")
+        Page<Product> findByProductVendorContainingIgnoreCase(
+            @Param("vendor") String vendor,
+            Pageable pageable
         );
     }
