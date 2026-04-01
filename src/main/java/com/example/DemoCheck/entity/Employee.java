@@ -1,6 +1,7 @@
 package com.example.DemoCheck.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -32,16 +33,16 @@ public class Employee {
 
     @ManyToOne
     @JoinColumn(name = "reportsTo")
-    @JsonIgnore   // ✅ ignore manager loop
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Employee manager;
 
     @OneToMany(mappedBy = "manager")
-    @JsonIgnore   // ✅ ignore manager loop
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) //
     private List<Employee> subordinates;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "officeCode")
-    @JsonIgnore   // ✅ ignore office loop
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) //
     private Office office;
 
     @OneToMany(mappedBy = "salesRepEmployee")

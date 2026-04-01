@@ -9,6 +9,8 @@ import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RepositoryEventHandler(Employee.class)
 public class EmployeeEventHandler {
@@ -60,26 +62,48 @@ public class EmployeeEventHandler {
         String email = employee.getEmail();
         if (email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("email cannot be blank");
-        } else if (!email.matches(EMAIL_REGEX)) {
+        }
+        else if (!email.matches(EMAIL_REGEX)) {
             throw new IllegalArgumentException("Must be a valid email format");
         }
-        employee.setEmail(email.trim());
+
+        // --- REVISED EMAIL VALIDATION ---
+        if (employee.getEmail() != null) {
+            String currentEmail = employee.getEmail().trim();
+
+            // Use the List version to avoid the "Non-unique result" crash
+            List<Employee> existingEmployees = employeeRepository.findByEmail(currentEmail);
+
+            for (Employee existing : existingEmployees) {
+                // If we find an employee with this email that is NOT the current employee
+                if (!existing.getEmployeeNumber().equals(employee.getEmployeeNumber())) {
+                    throw new IllegalArgumentException("Email already exists: " + currentEmail +
+                            " (Assigned to Employee #" + existing.getEmployeeNumber() + ")");
+                }
+            }
+
+            employee.setEmail(currentEmail);
+        }
 
         // --- OFFICE VALIDATION ---
-        if (employee.getOffice() != null) {
+        // 1. CATCH THE NULL CASE FIRST
+        if (employee.getOffice() == null) {
+            throw new IllegalArgumentException("Given Office Does Not Exist! try adding employee with valid Existing Office!");
+        }else{
             String officeCode = employee.getOffice().getOfficeCode();
 
             if (officeCode == null || !officeRepository.existsById(officeCode)) {
-                throw new IllegalArgumentException("Invalid office reference");
+                throw new IllegalArgumentException("Office not found with code: " + officeCode);
             }
         }
 
         // --- MANAGER VALIDATION ---
+
         if (employee.getManager() != null) {
             Integer managerId = employee.getManager().getEmployeeNumber();
 
             if (!employeeRepository.existsById(managerId)) {
-                throw new IllegalArgumentException("Invalid manager reference");
+                throw new IllegalArgumentException("Manager not found with ID: " + managerId);
             }
 
             if (managerId.equals(employee.getEmployeeNumber())) {
@@ -95,4 +119,5 @@ public class EmployeeEventHandler {
         }
         return value.trim();
     }
+
 }

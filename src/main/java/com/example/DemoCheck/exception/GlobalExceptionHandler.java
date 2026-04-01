@@ -110,10 +110,10 @@ public class GlobalExceptionHandler {
         try {
             Integer id = EmployeeEventHandler.currentEmployeeId.get();
 
-            if (id != null) {
-                message = "Employee already exists with id: " + id;
-            }
-            else if (ex.getMessage() != null && ex.getMessage().contains("customerNumber")) {
+//            if (id != null) {
+//                message = "Employee already exists with id: " + id;
+//            }
+             if (ex.getMessage() != null && ex.getMessage().contains("customerNumber")) {
                 message = "Customer is required for Order";
             }
             else if (ex.getMessage() != null && ex.getMessage().contains("not-null")) {

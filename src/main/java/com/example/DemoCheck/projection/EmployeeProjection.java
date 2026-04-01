@@ -8,6 +8,9 @@ import org.springframework.data.rest.core.config.Projection;
 @Projection(name = "employeeView", types = Employee.class)
 public interface EmployeeProjection {
 
+    // Hidden in UI, but needed for Edit/View buttons!
+    Integer getEmployeeNumber();
+
     @Value("#{target.firstName + ' ' + target.lastName}")
     String getFullName();   // calls entity method
 

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RepositoryRestResource(path = "employees")
 public interface EmployeeRepository extends JpaRepository<Employee,Integer> {
@@ -24,6 +25,12 @@ public interface EmployeeRepository extends JpaRepository<Employee,Integer> {
     @RestResource(path="byReportsTo" , rel="byReportsTo")
     Page<Employee> findByManagerEmployeeNumber(@Param("reportsTo") Integer reportsTo , Pageable pageable);
 
+    // Add this to your EmployeeRepository.java
+    @RestResource(path = "byReportingManagerName", rel = "byReportingManagerName")
+    @Query("SELECT e FROM Employee e WHERE " +
+            "LOWER(CONCAT(e.manager.firstName, ' ', e.manager.lastName)) LIKE LOWER(CONCAT('%', :managerName, '%'))")
+    Page<Employee> searchByManagerName(@Param("managerName") String managerName, Pageable pageable);
+
     // 3. Standard Spring Data Method for Job Title
     @RestResource(path = "byJobTitle", rel = "byJobTitle")
     Page<Employee> findByJobTitleContainingIgnoreCase(@Param("jobTitle") String jobTitle, Pageable pageable);
@@ -31,4 +38,6 @@ public interface EmployeeRepository extends JpaRepository<Employee,Integer> {
     @RestResource(path = "by-office-code",rel = "by-office-code")
     Page<Employee> findByOffice_OfficeCode(@Param("officeCode") String officeCode,
                                            Pageable pageable);
+
+    java.util.List<Employee> findByEmail(String email);
 }

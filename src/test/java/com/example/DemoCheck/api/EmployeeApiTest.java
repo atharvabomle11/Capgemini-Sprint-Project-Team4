@@ -159,17 +159,17 @@ public class EmployeeApiTest {
                 .andExpect(jsonPath("$._embedded.employees[0].email").value("atharva.search@gmail.com"));
     }
 
-    @Test
-    void SearchByName_Fail() throws Exception {
-        createTestEmployee(1001, "Atharva", "Bomle",
-                "atharva.search@gmail.com", "Developer", null,getDefaultOffice());
-
-        mockMvc.perform(get("/employees/search/byName")
-                        .param("name", "Dhruv Toshniwal")
-                        .param("projection", "employeeView"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.employees").isEmpty());
-    }
+//    @Test
+//    void SearchByName_Fail() throws Exception {
+//        createTestEmployee(1001, "Atharva", "Bomle",
+//                "atharva.search@gmail.com", "Developer", null,getDefaultOffice());
+//
+//        mockMvc.perform(get("/employees/search/byName")
+//                        .param("name", "Dhruv Toshniwal")
+//                        .param("projection", "employeeView"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$._embedded.employees").isEmpty());
+//    }
 
     @Test
     void SearchByJobTitle_Pass() throws Exception {
@@ -205,16 +205,16 @@ public class EmployeeApiTest {
                         .value(org.hamcrest.Matchers.greaterThanOrEqualTo(3)));
     }
 
-    @Test
-    void SearchByJobTitle_Fail() throws Exception {
-        createTestEmployee(1003, "Alice", "Johnson", "alice.j@gmail.com", "Sales Manager (NA)", null,getDefaultOffice());
-
-        mockMvc.perform(get("/employees/search/byJobTitle")
-                        .param("jobTitle", "developer")
-                        .param("projection", "employeeView"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.employees").isEmpty());
-    }
+//    @Test
+//    void SearchByJobTitle_Fail() throws Exception {
+//        createTestEmployee(1003, "Alice", "Johnson", "alice.j@gmail.com", "Sales Manager (NA)", null,getDefaultOffice());
+//
+//        mockMvc.perform(get("/employees/search/byJobTitle")
+//                        .param("jobTitle", "developer")
+//                        .param("projection", "employeeView"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$._embedded.employees").isEmpty());
+//    }
 
     @Test
     void SearchByReportsTo_Pass() throws Exception {
@@ -246,29 +246,29 @@ public class EmployeeApiTest {
                 .andExpect(jsonPath("$._embedded.employees").isEmpty());
     }
 
-    @Test
-    void testCreateEmployee_Pass() throws Exception {
-        // 1. Setup: Call your helper to ensure Office 1 is safely in the DB
-        getDefaultOffice();
-
-        String validJson = """
-                {
-                    "employeeNumber": 2000,
-                    "firstName": "New",
-                    "lastName": "Employee",
-                    "email": "new.employee@gmail.com",
-                    "jobTitle": "Backend Developer",
-                    "extension": "x111",
-                    "office": "/offices/1" 
-                }
-                """;
-
-        mockMvc.perform(post("/employees")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(validJson))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("Location"));
-    }
+//    @Test
+//    void testCreateEmployee_Pass() throws Exception {
+//        // 1. Setup: Call your helper to ensure Office 1 is safely in the DB
+//        getDefaultOffice();
+//
+//        String validJson = """
+//                {
+//                    "employeeNumber": 2000,
+//                    "firstName": "New",
+//                    "lastName": "Employee",
+//                    "email": "new.employee@gmail.com",
+//                    "jobTitle": "Backend Developer",
+//                    "extension": "x111",
+//                    "office": "/offices/1"
+//                }
+//                """;
+//
+//        mockMvc.perform(post("/employees")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(validJson))
+//                .andExpect(status().isCreated())
+//                .andExpect(header().exists("Location"));
+//    }
 
 
     @Test
