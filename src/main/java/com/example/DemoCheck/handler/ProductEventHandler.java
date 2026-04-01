@@ -22,7 +22,7 @@ public class ProductEventHandler {
     @HandleBeforeCreate
     public void handleBeforeCreate(Product p) {
         if (productRepository.existsById(p.getProductCode())) {
-            throw new IllegalArgumentException("Product already exists");
+            throw new IllegalArgumentException("Product ID already exists");
         }
         validateProductLine(p);
     }

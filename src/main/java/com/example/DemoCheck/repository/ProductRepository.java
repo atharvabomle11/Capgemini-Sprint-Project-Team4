@@ -7,14 +7,15 @@
     import org.springframework.data.rest.core.annotation.RepositoryRestResource;
     import org.springframework.data.rest.core.annotation.RestResource;
     import org.springframework.validation.annotation.Validated;
+    import org.springframework.web.bind.annotation.CrossOrigin;
 
     import com.example.DemoCheck.entity.Product;
     import com.example.DemoCheck.projection.ProductProjection;
-    import org.springframework.web.bind.annotation.CrossOrigin;
+
 
     @Validated
-    @CrossOrigin(origins = "*")
     @RepositoryRestResource(path = "products")
+    @CrossOrigin(origins = "*")
     public interface ProductRepository extends JpaRepository<Product, String> {
         @RestResource(path = "searchByNameOrLine")
         Page<Product> findByProductNameContainingIgnoreCaseOrProductLine_ProductLineContainingIgnoreCase(
